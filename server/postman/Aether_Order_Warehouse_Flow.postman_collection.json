@@ -1,0 +1,147 @@
+{
+  "info": {
+    "_postman_id": "07aefea4-54a4-4b9b-9f4b-98028d2bbbc2",
+    "name": "Aether API - Register to Order Fulfillment",
+    "description": "End-to-end development flow: register customer, buy, CS confirms, warehouse packs/exports, then completes delivery. Uses existing CS_STAFF and WAREHOUSE_MANAGER accounts supplied through environment variables.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000" },
+    { "key": "variantId", "value": "1" },
+    { "key": "quantity", "value": "1" },
+    { "key": "csIdentifier", "value": "" },
+    { "key": "csPassword", "value": "" },
+    { "key": "warehouseIdentifier", "value": "" },
+    { "key": "warehousePassword", "value": "" },
+    { "key": "shippingRecipient", "value": "API Flow Test" },
+    { "key": "shippingPhone", "value": "0900000000" },
+    { "key": "shippingProvince", "value": "Test province" },
+    { "key": "shippingDistrict", "value": "Test district" },
+    { "key": "shippingWard", "value": "Test ward" },
+    { "key": "shippingStreet", "value": "1 Test Street" }
+  ],
+  "item": [
+    {
+      "name": "1. Register test customer",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const stamp = Date.now();",
+              "pm.collectionVariables.set('testPhone', '+849' + String(stamp).slice(-10));",
+              "pm.collectionVariables.set('testEmail', 'api-flow-' + stamp + '@example.test');",
+              "pm.collectionVariables.set('testPassword', 'ApiFlow!2026');"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Customer registration succeeds', () => pm.response.to.have.status(200));",
+              "const body = pm.response.json();",
+              "pm.test('Registration returns a CUSTOMER token', () => { pm.expect(body.success).to.eql(true); pm.expect(body.data.accessToken).to.be.a('string'); pm.expect(body.data.user.roles.map(r => r.code)).to.include('CUSTOMER'); });",
+              "pm.collectionVariables.set('customerToken', body.data.accessToken);",
+              "pm.collectionVariables.set('testUserId', body.data.user.id);"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"fullName\": \"API Flow Test\",\n  \"phone\": \"{{testPhone}}\",\n  \"email\": \"{{testEmail}}\",\n  \"password\": \"{{testPassword}}\"\n}", "options": { "raw": { "language": "json" } } },
+        "url": "{{baseUrl}}/api/auth/register"
+      }
+    },
+    {
+      "name": "2. Add variant to cart",
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+        "pm.test('Cart item was added', () => { pm.response.to.have.status(201); pm.expect(pm.response.json().success).to.eql(true); });",
+        "const body = pm.response.json(); pm.collectionVariables.set('cartItemId', String(body.data.items[0].id));"
+      ] } }],
+      "request": {
+        "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{customerToken}}", "type": "string" }] },
+        "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"variantId\": \"{{variantId}}\",\n  \"quantity\": {{quantity}}\n}", "options": { "raw": { "language": "json" } } },
+        "url": "{{baseUrl}}/api/cart/items"
+      }
+    },
+    {
+      "name": "3. Checkout",
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+        "pm.test('Checkout creates a new order', () => { pm.response.to.have.status(201); pm.expect(pm.response.json().success).to.eql(true); });",
+        "const body = pm.response.json(); pm.collectionVariables.set('orderId', body.data.id); pm.collectionVariables.set('orderCode', body.data.orderCode);"
+      ] } }],
+      "request": {
+        "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{customerToken}}", "type": "string" }] },
+        "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"paymentMethod\": \"cod\",\n  \"note\": \"Postman integration flow\",\n  \"address\": {\n    \"recipientName\": \"{{shippingRecipient}}\",\n    \"recipientPhone\": \"{{shippingPhone}}\",\n    \"province\": \"{{shippingProvince}}\",\n    \"district\": \"{{shippingDistrict}}\",\n    \"ward\": \"{{shippingWard}}\",\n    \"streetAddress\": \"{{shippingStreet}}\"\n  }\n}", "options": { "raw": { "language": "json" } } },
+        "url": "{{baseUrl}}/api/orders/checkout"
+      }
+    },
+    {
+      "name": "4. CS login",
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+        "pm.test('CS login succeeds', () => { pm.response.to.have.status(200); pm.expect(pm.response.json().success).to.eql(true); });",
+        "pm.collectionVariables.set('csToken', pm.response.json().data.accessToken);"
+      ] } }],
+      "request": {
+        "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"identifier\": \"{{csIdentifier}}\",\n  \"password\": \"{{csPassword}}\"\n}", "options": { "raw": { "language": "json" } } },
+        "url": "{{baseUrl}}/api/auth/login"
+      }
+    },
+    {
+      "name": "5. CS confirms order (new -> processing)",
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+        "pm.test('CS confirmation succeeds', () => { pm.response.to.have.status(200); pm.expect(pm.response.json().data.status).to.eql('processing'); });"
+      ] } }],
+      "request": { "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{csToken}}", "type": "string" }] }, "method": "POST", "url": "{{baseUrl}}/api/admin/orders/{{orderId}}/confirm" }
+    },
+    {
+      "name": "6. Warehouse login",
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+        "pm.test('Warehouse login succeeds', () => { pm.response.to.have.status(200); pm.expect(pm.response.json().success).to.eql(true); });",
+        "pm.collectionVariables.set('warehouseToken', pm.response.json().data.accessToken);"
+      ] } }],
+      "request": {
+        "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"identifier\": \"{{warehouseIdentifier}}\",\n  \"password\": \"{{warehousePassword}}\"\n}", "options": { "raw": { "language": "json" } } },
+        "url": "{{baseUrl}}/api/auth/login"
+      }
+    },
+    {
+      "name": "7. Warehouse starts packing (processing -> packing)",
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+        "pm.test('Order enters packing', () => { pm.response.to.have.status(200); pm.expect(pm.response.json().data.status).to.eql('packing'); });"
+      ] } }],
+      "request": { "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{warehouseToken}}", "type": "string" }] }, "method": "PATCH", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"status\": \"packing\"\n}", "options": { "raw": { "language": "json" } } }, "url": "{{baseUrl}}/api/admin/orders/{{orderId}}/status" }
+    },
+    {
+      "name": "8. Warehouse exports ordered quantity",
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+        "pm.test('Stock export is recorded', () => { pm.response.to.have.status(201); pm.expect(pm.response.json().data.type).to.eql('export'); });",
+        "pm.collectionVariables.set('stockDocumentId', pm.response.json().data.id);"
+      ] } }],
+      "request": { "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{warehouseToken}}", "type": "string" }] }, "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"type\": \"export\",\n  \"orderId\": \"{{orderId}}\",\n  \"note\": \"Postman integration flow\",\n  \"items\": [{\n    \"variantId\": \"{{variantId}}\",\n    \"quantity\": {{quantity}}\n  }]\n}", "options": { "raw": { "language": "json" } } }, "url": "{{baseUrl}}/api/admin/stock/documents" }
+    },
+    {
+      "name": "9. Warehouse marks shipped (packing -> shipping)",
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+        "pm.test('Order enters shipping after full export', () => { pm.response.to.have.status(200); pm.expect(pm.response.json().data.status).to.eql('shipping'); });"
+      ] } }],
+      "request": { "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{warehouseToken}}", "type": "string" }] }, "method": "PATCH", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"status\": \"shipping\"\n}", "options": { "raw": { "language": "json" } } }, "url": "{{baseUrl}}/api/admin/orders/{{orderId}}/status" }
+    },
+    {
+      "name": "10. Warehouse completes delivery (shipping -> completed)",
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+        "pm.test('Order is completed', () => { pm.response.to.have.status(200); pm.expect(pm.response.json().data.status).to.eql('completed'); });"
+      ] } }],
+      "request": { "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{warehouseToken}}", "type": "string" }] }, "method": "PATCH", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"status\": \"completed\"\n}", "options": { "raw": { "language": "json" } } }, "url": "{{baseUrl}}/api/admin/orders/{{orderId}}/status" }
+    }
+  ]
+}
