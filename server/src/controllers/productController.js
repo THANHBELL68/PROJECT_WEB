@@ -67,7 +67,7 @@ export const getProductById = async (req, res) => {
       },
     });
 
-    if (!product || product.deleted_at) {
+    if (!product || product.deleted_at || product.is_visible === false) {
       return res.status(404).json({ success: false, message: "Không tìm thấy sản phẩm" });
     }
 

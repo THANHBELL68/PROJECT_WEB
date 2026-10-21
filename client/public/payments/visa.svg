@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 56" role="img" aria-labelledby="title">
+  <title id="title">Visa</title>
+  <path fill="#f7a600" d="M20 7h22l12 31L67 7h22L66 49H43z"/>
+  <path fill="#1a4f9c" d="M70 49 84 7h20L90 49zm43-29c0-8 7-14 20-14 6 0 12 1 16 3l-3 13c-4-2-9-4-14-4-3 0-5 1-5 3 0 5 23 3 23 17 0 9-8 15-22 15-8 0-16-2-20-5l3-13c5 3 11 5 17 5 4 0 6-1 6-3 0-5-21-4-21-17zm50 29 3-8h-16l-4 8h-21l26-42h25l8 42zm-7-20h7l1-10z"/>
+</svg>

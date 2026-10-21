@@ -1,15 +1,17 @@
-'use client';
+import Link from 'next/link';
 
-import { useEffect, useState } from 'react';
-import { ProductGrid } from './ProductGrid';
-import { productService } from '@/services/productService';
-import type { Product } from '@/types/api';
+const highlights = [
+  { image: '/aether-favorites-colors.jpg', alt: 'Áo nỉ với nhiều màu sắc', number: '01', title: 'Màu sắc nổi bật' },
+  { image: '/aether-favorites-accessories.jpg', alt: 'Thắt lưng, đồng hồ và nước hoa', number: '02', title: 'Chi tiết tạo khác biệt' },
+  { image: '/aether-favorites-essentials.jpg', alt: 'Các thiết kế trang phục thường ngày', number: '03', title: 'Thiết yếu mỗi ngày' },
+];
 
 export function FeaturedProducts() {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [error, setError] = useState('');
-  useEffect(() => { productService.list().then((result) => setProducts(result.data.slice(0, 4))).catch((reason) => setError(reason.message)); }, []);
-  if (error) return <div className="notice">Chưa tải được sản phẩm. {error}</div>;
-  if (!products.length) return <div className="loading-state"><span className="spinner" />Đang tải sản phẩm…</div>;
-  return <ProductGrid products={products} />;
+  return <div className="favorites-grid">
+    {highlights.map((item) => <Link className="favorite-card" href="/products" key={item.number}>
+      <img src={item.image} alt={item.alt} />
+      <span className="favorite-number">{item.number} / AETHER EDIT</span>
+      <div className="favorite-copy"><h3>{item.title}</h3><span>Khám phá sản phẩm <b>↗</b></span></div>
+    </Link>)}
+  </div>;
 }

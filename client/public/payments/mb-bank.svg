@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 142 56" role="img" aria-labelledby="title">
+  <title id="title">MB Bank</title>
+  <g fill="#e83453" transform="translate(4 8)">
+    <path d="M23 1 30 13 43 10 39 23 51 30 39 37 43 50 30 47 23 59 16 47 3 50 7 37-5 30 7 23 3 10 16 13z" transform="scale(.72) translate(8 -4)"/>
+  </g>
+  <text x="52" y="39" fill="#1236c4" font-family="Arial,sans-serif" font-size="34" font-weight="700" letter-spacing="-1.5">MB</text>
+  <text x="100" y="39" fill="#1236c4" font-family="Arial,sans-serif" font-size="11" font-weight="700">BANK</text>
+</svg>

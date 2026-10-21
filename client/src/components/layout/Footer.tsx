@@ -1,8 +1,15 @@
 import Link from 'next/link';
 
 export function Footer() {
-  return <footer className="site-footer">
-    <div className="footer-top"><Link className="wordmark" href="/">AETHER<span>®</span></Link><p>Những món đồ tốt, cho mỗi ngày.</p><Link href="/products">Khám phá bộ sưu tập <span>↗</span></Link></div>
-    <div className="footer-bottom"><span>© 2026 AETHER LABS</span><span>Được tạo cho cuộc sống thường ngày</span><Link href="/profile">Hỗ trợ khách hàng</Link></div>
+  return <footer className="site-footer" id="footer-contact">
+    <div className="footer-main">
+      <section className="footer-brand"><Link className="wordmark" href="/">AETHER<span>®</span></Link><p className="footer-slogan">Mặc điều bạn cần.<br />Sống theo cách bạn muốn.</p><p className="footer-about">AETHER tạo nên những thiết kế thiết yếu, thoải mái và bền bỉ cho nhịp sống mỗi ngày.</p><div className="social-links" aria-label="Mạng xã hội"><a href="https://facebook.com" aria-label="Facebook"><img src="/social/facebook.svg" alt="" /></a><a href="https://instagram.com" aria-label="Instagram"><img src="/social/instagram.svg" alt="" /></a><a href="https://youtube.com" aria-label="YouTube"><img src="/social/youtube.svg" alt="" /></a><a href="https://tiktok.com" aria-label="TikTok"><img src="/social/tiktok.svg" alt="" /></a><a href="https://zalo.me" aria-label="Zalo"><img src="/social/zalo.svg" alt="" /></a></div></section>
+      <section className="footer-column"><h2>Khám phá</h2><Link href="/">Trang chủ</Link><Link href="/products">Danh mục sản phẩm</Link><Link href="/products">Bộ sưu tập</Link><Link href="/profile">Về AETHER</Link><Link href="/products">Cơ hội nghề nghiệp</Link></section>
+      <section className="footer-column"><h2>Chăm sóc khách hàng</h2><Link href="/profile">Liên hệ với chúng tôi</Link><Link href="/products">Câu hỏi thường gặp</Link><Link href="/products">Chính sách đổi trả</Link><Link href="/products">Chính sách bảo hành</Link><Link href="/products">Vận chuyển & giao nhận</Link></section>
+      <section className="footer-column footer-contact"><h2>Thông tin doanh nghiệp</h2><p><strong>AETHER LABS</strong></p><p>Số 88, phường Xuân Phương</p><p>Hotline: <a href="tel:0866105856">0866 105 856</a></p><p>Email: <a href="mailto:AETHERLAB.Corporation@gmail.com">AETHERLAB.Corporation@gmail.com</a></p><p>Giờ làm việc: 8:00–21:30</p></section>
+      <section className="footer-newsletter"><h2>Nhận tin từ AETHER</h2><p>Cập nhật bộ sưu tập mới và ưu đãi dành riêng cho bạn.</p><form action="#footer-contact"><label className="sr-only" htmlFor="newsletter-email">Địa chỉ email</label><input id="newsletter-email" type="email" placeholder="Email của bạn" required /><button type="submit" aria-label="Đăng ký nhận tin">→</button></form><small>Bằng cách đăng ký, bạn đồng ý với chính sách bảo mật của chúng tôi.</small></section>
+    </div>
+    <div className="footer-payments"><span>Phương thức thanh toán</span><span className="footer-payment-logo"><img src="/payments/visa.svg" alt="Visa" /></span><span className="footer-payment-logo"><img src="/payments/vietcombank.svg" alt="Vietcombank" /></span><span className="footer-payment-logo"><img src="/payments/mb-bank.svg" alt="MB Bank" /></span><b>COD</b><Link href="/products">Điều khoản sử dụng</Link><Link href="/products">Chính sách bảo mật</Link><Link href="/products">Sơ đồ trang web</Link></div>
+    <div className="footer-legal"><span>© 2026 AETHER. Bảo lưu mọi quyền.</span><span>Thông tin pháp lý doanh nghiệp · AETHER LABS</span><span className="certification">THÔNG TIN ĐĂNG KÝ BỘ CÔNG THƯƠNG</span></div>
   </footer>;
 }

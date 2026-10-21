@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 230 56" role="img" aria-labelledby="title">
+  <title id="title">Vietcombank</title>
+  <defs><linearGradient id="g" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#8bc53f"/><stop offset="1" stop-color="#00834a"/></linearGradient></defs>
+  <path fill="url(#g)" d="M27 7c-13 0-23 9-23 20 0 12 12 22 24 22 10 0 19-7 22-18l-10-5c-2 8-6 12-12 12-7 0-12-5-12-11 0-5 4-9 10-9h21C44 11 36 7 27 7z"/>
+  <text x="61" y="38" fill="#006b45" font-family="Arial,sans-serif" font-size="24" font-weight="700" letter-spacing="-.7">Vietcombank</text>
+</svg>
